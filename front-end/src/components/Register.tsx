@@ -13,7 +13,7 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import styled from 'styled-components';
-
+import API_ROUTES from '../config/ApiUrls';
 const theme = createTheme();
 
 const Background = styled.div`
@@ -32,13 +32,30 @@ const StyledContainer = styled(Container)`
 `;
 
 function Register() {
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
+
+        const user = {
+            firstName: data.get('firstName'),
+            lastName: data.get('lastName'),
             email: data.get('email'),
             password: data.get('password'),
+        };
+
+        const response = await fetch(API_ROUTES.REGISTER, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user),
         });
+
+        if (response.ok) {
+            console.log('User created successfully');
+        } else {
+            console.error('Error creating user');
+        }
     };
 
     return (
