@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Avatar,
     Button,
@@ -9,11 +9,13 @@ import {
     Box,
     Typography,
     Container,
+    Alert,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import styled from 'styled-components';
 import API_ROUTES from '../config/ApiUrls';
+
 const theme = createTheme();
 
 const Background = styled.div`
@@ -32,15 +34,21 @@ const StyledContainer = styled(Container)`
 `;
 
 function Register() {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errors, setErrors] = useState<string[]>([]);
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
+        setErrors([]);
 
         const user = {
-            firstName: data.get('firstName'),
-            lastName: data.get('lastName'),
-            email: data.get('email'),
-            password: data.get('password'),
+            firstName,
+            lastName,
+            email,
+            password,
         };
 
         const response = await fetch(API_ROUTES.REGISTER, {
@@ -54,7 +62,8 @@ function Register() {
         if (response.ok) {
             console.log('User created successfully');
         } else {
-            console.error('Error creating user');
+            const errorData = await response.json();
+            setErrors(errorData.errors.map((err: any) => err.msg));
         }
     };
 
@@ -76,6 +85,15 @@ function Register() {
                         <Typography component="h1" variant="h5">
                             S'inscrire
                         </Typography>
+                        {errors.length > 0 && (
+                            <Box sx={{ mt: 1, width: '100%' }}>
+                                {errors.map((error, index) => (
+                                    <Alert severity="error" key={index}>
+                                        {error}
+                                    </Alert>
+                                ))}
+                            </Box>
+                        )}
                         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
@@ -87,6 +105,8 @@ function Register() {
                                         id="firstName"
                                         label="Prénom"
                                         autoFocus
+                                        value={firstName}
+                                        onChange={(e) => setFirstName(e.target.value)}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -97,6 +117,8 @@ function Register() {
                                         label="Nom de famille"
                                         name="lastName"
                                         autoComplete="lname"
+                                        value={lastName}
+                                        onChange={(e) => setLastName(e.target.value)}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -107,6 +129,8 @@ function Register() {
                                         label="Adresse email"
                                         name="email"
                                         autoComplete="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -118,6 +142,8 @@ function Register() {
                                         type="password"
                                         id="password"
                                         autoComplete="new-password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
                                     />
                                 </Grid>
                             </Grid>

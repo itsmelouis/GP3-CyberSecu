@@ -11,6 +11,7 @@ import {
     Container,
     Link,
     Grid,
+    Alert,
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -39,11 +40,13 @@ const StyledContainer = styled(Container)`
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errors, setErrors] = useState<string[]>([]);
     const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setErrors([]);
 
         const user = {
             email,
@@ -61,9 +64,10 @@ function Login() {
         if (response.ok) {
             const data = await response.json();
             login(data.token);
-            navigate('/me'); // Redirection vers la page /me
+            navigate('/me');
         } else {
-            console.error('Error logging in user');
+            const errorData = await response.json();
+            setErrors(errorData.errors.map((err: any) => err.msg));
         }
     };
 
@@ -85,6 +89,15 @@ function Login() {
                         <Typography component="h1" variant="h5">
                             Se connecter
                         </Typography>
+                        {errors.length > 0 && (
+                            <Box sx={{ mt: 1, width: '100%' }}>
+                                {errors.map((error, index) => (
+                                    <Alert severity="error" key={index}>
+                                        {error}
+                                    </Alert>
+                                ))}
+                            </Box>
+                        )}
                         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                             <TextField
                                 margin="normal"
