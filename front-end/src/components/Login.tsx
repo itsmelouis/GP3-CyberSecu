@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Avatar,
     Button,
@@ -15,6 +15,9 @@ import {
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import styled from 'styled-components';
+import API_ROUTES from '../config/ApiUrls';
+import { useAuth } from '../config/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme();
 
@@ -34,8 +37,34 @@ const StyledContainer = styled(Container)`
 `;
 
 function Login() {
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const { login } = useAuth();
+    const navigate = useNavigate();
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+
+        const user = {
+            email,
+            password,
+        };
+
+        const response = await fetch(API_ROUTES.LOGIN, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            login(data.token);
+            navigate('/me'); // Redirection vers la page /me
+        } else {
+            console.error('Error logging in user');
+        }
     };
 
     return (
@@ -66,6 +95,8 @@ function Login() {
                                 name="email"
                                 autoComplete="email"
                                 autoFocus
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                             <TextField
                                 margin="normal"
@@ -76,6 +107,8 @@ function Login() {
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                             <FormControlLabel
                                 control={<Checkbox value="remember" color="primary" />}
