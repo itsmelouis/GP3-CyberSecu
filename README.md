@@ -32,6 +32,7 @@ Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur 
    git clone https://github.com/itsmelouis/GP3-CyberSecu.git
    cd GP3-CyberSecu/backend
    ```
+
 2. Installez les dépendances du projet :
 
 Avec npm :
@@ -39,7 +40,7 @@ Avec npm :
 ```bash
 
 npm install
-``` 
+```
 
 3. Configuration de l'Environnement
 
@@ -63,3 +64,11 @@ Ensuite, vous n'avez plus qu'à lancer le serveur grâce à la commande :
 npm start
 ```
 
+# Configuration du FrontEnd
+
+Installez les dépendances du projet :
+npm install
+
+# Lancer le projet FrontEnd
+
+npm run dev
